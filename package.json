@@ -1,0 +1,17 @@
+{
+  "name": "nosql",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Murli Kumar",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "npx nodemon server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.5.0"
+  }
+}
