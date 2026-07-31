@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 const { getDb } = require("../utils/db.js");
 
 class Product {
@@ -23,6 +24,13 @@ class Product {
   static fetchAll() {
     const db = getDb();
     return db.collection("product").find().toArray();
+  }
+
+  static findById(productId) {
+    const db = getDb();
+    return db.collection("product").findOne({
+      _id: new ObjectId(productId),
+    });
   }
 }
 module.exports = Product;
