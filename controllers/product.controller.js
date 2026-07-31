@@ -16,3 +16,13 @@ exports.postAddProduct = (req, res, next) => {
       console.log(err);
     });
 };
+exports.getAllProducts = (req, res, next) => {
+  Product.fetchAll()
+    .then((products) => {
+      res.status(200).json(products);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ err: err.message });
+    });
+};
