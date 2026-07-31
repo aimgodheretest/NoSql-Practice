@@ -41,3 +41,35 @@ exports.getProductById = (req, res, next) => {
       res.status(500).json({ err: err.message });
     });
 };
+
+exports.updateProduct = (req, res, next) => {
+  const productId = req.params.productId;
+
+  Product.updateById(productId, req.body)
+    .then((result) => {
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "Productnot found!" });
+      }
+      res.status(200).json({ message: "product updated successfully..." });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: err.message });
+    });
+};
+exports.deleteProduct = (req, res, next) => {
+  const productId = req.params.productId;
+
+  Product.deleteById(productId)
+
+    .then((result) => {
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "Product not found!" });
+      }
+      res.status(200).json({ message: "Product deleted successfully" });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({ error: err.message });
+    });
+};

@@ -32,5 +32,17 @@ class Product {
       _id: new ObjectId(productId),
     });
   }
+
+  static updateById(productId, productData) {
+    const db = getDb();
+    return db
+      .collection("product")
+      .updateOne({ _id: new ObjectId(productId) }, { $set: productData });
+  }
+
+  static deleteById(productId) {
+    const db = getDb();
+    return db.collection("product").deleteOne({ _id: new ObjectId(productId) });
+  }
 }
 module.exports = Product;
