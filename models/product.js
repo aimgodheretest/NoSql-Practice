@@ -33,6 +33,18 @@ class Product {
     });
   }
 
+  static fetchAllByIds(productIds) {
+    const db = getDb();
+    return db
+      .collection("product")
+      .findOne({
+        _id: {
+          $in: productIds,
+        },
+      })
+      .toArray();
+  }
+
   static updateById(productId, productData) {
     const db = getDb();
     return db

@@ -1,13 +1,14 @@
 const { ObjectId } = require("mongodb");
 const { getDb } = require("../utils/db");
-
+const Product = require("./product");
 class User {
-  constructor(username, email) {
+  constructor(username, email, cart, id) {
     this.name = username;
     this.email = email;
     this.cart = {
       items: [],
     };
+    this._id = id;
   }
 
   save() {
@@ -17,9 +18,14 @@ class User {
 
   static findById(userId) {
     const db = getDb();
-    return db.collection("users").findOne({
-      _id: new ObjectId(userId),
-    });
+    return db
+      .collection("users")
+      .findOne({
+        _id: new ObjectId(userId),
+      })
+      .then((user) => {
+        return new User(user.name, user.email, user.cart, user._id);
+      });
   }
 
   addToCart(productId) {
@@ -47,6 +53,30 @@ class User {
           { $set: { "cart.items": updatedCartItems } },
         );
     });
+  }
+
+  getCart() {
+    const productIds = this.cart.items.map((item) => {
+      return item.productId;
+    });
+    return Product.fetchAllByIds(productIds);
+  }
+
+  removeFromCart(productId) {
+    const db = getDb();
+
+    const updatedCartItems = this.cart.items.filter((item) => {
+      return item.productId.toString() !== productId.toString();
+    });
+
+    return db.collection("users").updateOne(
+      { _id: this._id },
+      {
+        $set: {
+          "cart.items": updatedCartItems,
+        },
+      },
+    );
   }
 }
 
