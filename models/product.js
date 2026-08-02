@@ -37,7 +37,7 @@ class Product {
     const db = getDb();
     return db
       .collection("product")
-      .findOne({
+      .find({
         _id: {
           $in: productIds,
         },

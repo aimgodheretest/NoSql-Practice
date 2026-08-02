@@ -5,7 +5,7 @@ class User {
   constructor(username, email, cart, id) {
     this.name = username;
     this.email = email;
-    this.cart = {
+    this.cart = cart || {
       items: [],
     };
     this._id = id;
@@ -24,6 +24,7 @@ class User {
         _id: new ObjectId(userId),
       })
       .then((user) => {
+        if (!user) return null;
         return new User(user.name, user.email, user.cart, user._id);
       });
   }
