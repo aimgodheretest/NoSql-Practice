@@ -61,7 +61,19 @@ class User {
     const productIds = this.cart.items.map((item) => {
       return item.productId;
     });
-    return Product.fetchAllByIds(productIds);
+
+    return Product.fetchAllByIds(productIds).then((products) => {
+      return products.map((product) => {
+        const cartItem = this.cart.items.find((item) => {
+          return item.productId.toString() === product._id.toString();
+        });
+
+        return {
+          ...product,
+          quantity: cartItem.quantity,
+        };
+      });
+    });
   }
 
   removeFromCart(productId) {
@@ -83,20 +95,40 @@ class User {
 
   addOrder() {
     const db = getDb();
-    const order = new Order(this._id, this.cart.items);
 
-    return order.save().then(() => {
-      db.collection("orders").updateOne(
-        {
-          _id: this._id,
-        },
-        {
-          $set: {
-            "cart.items": [],
-          },
-        },
-      );
+    const productIds = this.cart.items.map((item) => {
+      return item.productId;
     });
+
+    return Product.fetchAllByIds(productIds)
+      .then((products) => {
+        const orderItems = products.map((product) => {
+          const cartItem = this.cart.items.find((item) => {
+            return item.productId.toString() === product._id.toString();
+          });
+
+          return {
+            ...product,
+            quantity: cartItem.quantity,
+          };
+        });
+
+        const order = new Order(this._id, orderItems);
+
+        return order.save();
+      })
+      .then(() => {
+        return db.collection("users").updateOne(
+          {
+            _id: this._id,
+          },
+          {
+            $set: {
+              "cart.items": [],
+            },
+          },
+        );
+      });
   }
 }
 

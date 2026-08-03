@@ -8,7 +8,7 @@ class Order {
   }
   save() {
     const db = getDb();
-    db.collections("orders").insertOne(this);
+    return db.collection("orders").insertOne(this);
   }
   static fetchByUserId(userId) {
     const db = getDb();
