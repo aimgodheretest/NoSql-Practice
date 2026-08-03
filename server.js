@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-const { mongoDbConnection, getDb } = require("./utils/db.js");
+const mongoDbConnection = require("./utils/db");
 const app = express();
 const productRoutes = require("./routes/productRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
@@ -39,8 +39,11 @@ app.use("/", productRoutes);
 app.use("/", cartRoutes);
 app.use("/", orderRoutes);
 
-mongoDbConnection(() => {
-  app.listen(3000, () => {
-    console.log(`Server Started...`);
+mongoDbConnection()
+  .then(() => {
+    console.log("MongoDB Connected");
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.log(err);
   });
-});
