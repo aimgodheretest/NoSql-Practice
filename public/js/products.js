@@ -1,5 +1,11 @@
 const form = document.getElementById("productForm");
+const params = new URLSearchParams(window.location.search);
+const editMode = params.get("edit") === "true";
+const productId = params.get("productId");
 
+if (editMode && form) {
+  loadProduct();
+}
 // -------------------------
 // Add Product
 // -------------------------
@@ -19,16 +25,30 @@ async function addProduct(e) {
   };
 
   try {
-    const response = await fetch(`${BASE_URL}/products`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(product),
-    });
+    let response;
+
+    if (editMode) {
+      // Update existing product
+      response = await fetch(`${BASE_URL}/products/${productId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product),
+      });
+    } else {
+      // Create new product
+      response = await fetch(`${BASE_URL}/products`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(product),
+      });
+    }
 
     if (!response.ok) {
-      throw new Error("Unable to create product");
+      throw new Error("Something went wrong");
     }
 
     const data = await response.json();
@@ -37,7 +57,7 @@ async function addProduct(e) {
 
     form.reset();
 
-    window.location.href = "/products-page";
+    window.location.href = "/admin-products";
   } catch (err) {
     console.log(err);
     alert(err.message);
@@ -52,6 +72,37 @@ const productsContainer = document.getElementById("productsContainer");
 
 if (productsContainer) {
   loadProducts();
+}
+
+// -------------------------
+// Load Product for Edit
+// -------------------------
+
+async function loadProduct() {
+  try {
+    const response = await fetch(`${BASE_URL}/products/${productId}`);
+
+    if (!response.ok) {
+      throw new Error("Unable to fetch product");
+    }
+
+    const product = await response.json();
+
+    document.getElementById("title").value = product.title;
+    document.getElementById("productUrl").value = product.productUrl;
+    document.getElementById("price").value = product.price;
+    document.getElementById("description").value = product.description;
+
+    // Update UI
+    const title = document.getElementById("pageTitle");
+    if (title) {
+      title.textContent = "Edit Product";
+    }
+
+    document.getElementById("submitBtn").textContent = "Update Product";
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function loadProducts() {
