@@ -20,13 +20,11 @@ exports.postOrder = (req, res, next) => {
       });
     });
 };
-exports.getOrders = (req, res, next) => {
+exports.getOrders = (req, res) => {
   const userId = req.params.userId;
 
-  Order.fetchByUserId(userId)
+  Order.find({ user: userId })
     .then((orders) => {
-      console.log(orders);
-
       res.status(200).json(orders);
     })
     .catch((err) => {

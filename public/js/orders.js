@@ -40,26 +40,24 @@ function renderOrders(orders) {
 
     order.items.forEach((item) => {
       html += `
+        <div class="order-item">
 
-            <div class="order-item">
+            <img src="${item.product.productUrl}" alt="${item.product.title}">
 
-                <img src="${item.productUrl}" alt="${item.title}">
+            <div class="order-details">
 
-                <div class="order-details">
+                <h3>${item.product.title}</h3>
 
-                    <h3>${item.title}</h3>
+                <p><strong>₹${item.product.price}</strong></p>
 
-                    <p><strong>₹${item.price}</strong></p>
+                <p><strong>Quantity:</strong> ${item.quantity}</p>
 
-                    <p>Quantity : ${item.quantity}</p>
-
-                    <p>${item.description}</p>
-
-                </div>
+                <p>${item.product.description}</p>
 
             </div>
 
-            `;
+        </div>
+    `;
     });
 
     html += `</div>`;

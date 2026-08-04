@@ -6,8 +6,6 @@ exports.addToCart = (req, res) => {
 
   User.findById(userId)
     .then((user) => {
-      console.log(user);
-      
       return Product.findById(productId).then((product) => {
         return user.addToCart(product);
       });

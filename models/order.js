@@ -1,24 +1,32 @@
-const { ObjectId } = require("mongodb");
-const { getDb } = require("../utils/db.js");
+const mongoose = require("mongoose");
 
-class Order {
-  constructor(userId, items) {
-    this.userId = userId;
-    this.items = items;
-  }
-  save() {
-    const db = getDb();
-    return db.collection("orders").insertOne(this);
-  }
-  static fetchByUserId(userId) {
-    const db = getDb();
-    return db
-      .collection("orders")
-      .find({
-        userId: new ObjectId(userId),
-      })
-      .toArray();
-  }
-}
+const Schema = mongoose.Schema;
 
-module.exports = Order;
+const orderSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    items: [
+      {
+        product: {
+          type: Object,
+          required: true,
+        },
+
+        quantity: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
+
+module.exports = mongoose.model("Order", orderSchema);

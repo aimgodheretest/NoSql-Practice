@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Order = require("./order");
 
 const Schema = mongoose.Schema;
 
@@ -33,7 +34,7 @@ const userSchema = new Schema({
 });
 
 /*
-Mongoose Instance Method
+addToCart Mongoose Instance Method
 */
 userSchema.methods.addToCart = function (product) {
   const cartProductIndex = this.cart.items.findIndex((item) => {
@@ -57,7 +58,7 @@ userSchema.methods.addToCart = function (product) {
 };
 
 /*
-Mongoose Instance Method
+getCart Mongoose Instance Method
 */
 userSchema.methods.getCart = function () {
   return this.populate("cart.items.productId").then((user) => {
@@ -71,7 +72,7 @@ userSchema.methods.getCart = function () {
 };
 
 /*
-Mongoose Instance Method
+removeFromCart Mongoose Instance Method
 */
 userSchema.methods.removeFromCart = function (productId) {
   const updatedCartItems = this.cart.items.filter((item) => {
@@ -81,6 +82,34 @@ userSchema.methods.removeFromCart = function (productId) {
   this.cart.items = updatedCartItems;
 
   return this.save();
+};
+/*
+addOrder Mongoose Instance Method
+
+*/
+userSchema.methods.addOrder = function () {
+  return this.populate("cart.items.productId")
+    .then((user) => {
+      const products = user.cart.items.map((item) => {
+        return {
+          quantity: item.quantity,
+          product: {
+            ...item.productId._doc,
+          },
+        };
+      });
+
+      const order = new Order({
+        user: this._id,
+        items: products,
+      });
+
+      return order.save();
+    })
+    .then(() => {
+      this.cart.items = [];
+      return this.save();
+    });
 };
 
 module.exports = mongoose.model("User", userSchema);
