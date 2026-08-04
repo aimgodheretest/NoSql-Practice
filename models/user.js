@@ -32,4 +32,28 @@ const userSchema = new Schema({
   },
 });
 
+/*
+Mongoose Instance Method
+*/
+userSchema.methods.addToCart = function (product) {
+  const cartProductIndex = this.cart.items.findIndex((item) => {
+    return item.productId.toString() === product._id.toString();
+  });
+
+  let updatedCartItems = [...this.cart.items];
+
+  if (cartProductIndex >= 0) {
+    updatedCartItems[cartProductIndex].quantity += 1;
+  } else {
+    updatedCartItems.push({
+      productId: product._id,
+      quantity: 1,
+    });
+  }
+
+  this.cart.items = updatedCartItems;
+
+  return this.save();
+};
+
 module.exports = mongoose.model("User", userSchema);
