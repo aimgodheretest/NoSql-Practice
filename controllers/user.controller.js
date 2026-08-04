@@ -1,17 +1,29 @@
-const User = require("../models/user.js");
+const User = require("../models/user");
 
 exports.createUser = (req, res, next) => {
   const { username, email } = req.body;
 
-  const user = new User(username, email);
+  const user = new User({
+    name: username,
+    email: email,
+    cart: {
+      items: [],
+    },
+  });
 
   user
     .save()
-    .then(() => {
-      res.json({ message: "User Created" });
-      return;
+    .then((result) => {
+      res.status(201).json({
+        message: "User created successfully",
+        user: result,
+      });
     })
     .catch((err) => {
       console.log(err);
+
+      res.status(500).json({
+        error: err.message,
+      });
     });
 };
